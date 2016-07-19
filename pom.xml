@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>com.despegar.scm</groupId>
+		<artifactId>scm-master-pom</artifactId>
+		<version>1.0.7</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.despegar.oas</groupId>
+	<artifactId>oas-forwarder</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.9</version>
+	<name>oas-forwarder Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>oas-forwarder</finalName>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2.2</version>
+				<configuration>
+					<tagBase>${releaseTagBase}</tagBase>
+					<preparationGoals>clean install</preparationGoals>
+					<goals>clean deploy</goals>
+					<updateBranchVersions>true</updateBranchVersions>
+					<updateWorkingCopyVersions>true</updateWorkingCopyVersions>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<checkModificationExcludes>
+						<checkModificationExclude>environment.properties</checkModificationExclude>
+					</checkModificationExcludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<scm>
+		<connection>scm:git:git@gitlab.despegar.it:oas/forwarder.git</connection>
+		<developerConnection>scm:git:git@gitlab.despegar.it:oas/forwarder.git</developerConnection>
+		<url>scm:git:git@gitlab.despegar.it:oas/forwarder.git</url>
+	</scm>
+
+	<profiles>
+		<profile>
+			<id>RELEASE</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<property>
+					<name>build</name>
+					<value>release</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.despegar.cars.deploys</groupId>
+						<artifactId>cloudia-tomcat-maven-plugin</artifactId>
+						<version>1.0.2</version>
+						<configuration>
+							<environments>rc</environments>
+							<environmentSource>support/environment_es_UY_{environment}.properties</environmentSource>
+							<healthURI>/oas-forwarder/health-check</healthURI>
+							<healthTimeout>240</healthTimeout>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>com.newrelic.agent.java</groupId>
+								<artifactId>newrelic-agent</artifactId>
+								<version>3.4.2</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>tar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+
+	</profiles>
+</project>
